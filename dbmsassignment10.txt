@@ -1,0 +1,112 @@
+Name : ANURAG PATIL
+Roll No. : SIB27
+Lab Assignment : 10
+
+Write a PL/SQL block to implement all types of cursor.
+-------------------------------------------------------------------------------------------------
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| demo               |
+| cursor             |
+| mysql              |
+| sys                |              
++--------------------+
+4 results in set (0.00 sec)
+
+mysql> use cursor;
+Database changed
+mysql> show tables;
++------------------+
+| Tables_in_cursor |
++------------------+
+| student          |
++------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from student;
++--------+---------+-------+------+------+
+| rollno | name    | maths | dbms | cg   |
++--------+---------+-------+------+------+
+|      1 | aryan   |    92 |   89 |   95 |
+|      2 | ram     |    72 |   81 |   79 |
+|      3 | mohan   |    55 |   43 |   47 |
+|      4 | suraj   |    99 |   98 |   99 |
+|      5 | rahul   |    96 |   97 |   98 |
++--------+---------+-------+------+------+
+5 results in set (0.00 sec)
+
+mysql> delimiter //
+mysql> create procedure cal_grade()
+    -> begin
+    -> declare rn,s1,s2,s3,t int;
+    -> declare stu_cursor cursor for select rollno,maths,dbms,cg from student;
+    -> open stu_cursor;
+    -> stu_cursor:loop
+    -> fetch stu_cursor into rn,s1,s2,s3;
+    -> set t=(s1+s2+s3)/3;
+    -> if t>80 then select concat('O: ',t) as "results";
+    -> end if;
+    -> if t>=75 and t<=80 then select concat('A+: ',t) as "results";
+    -> end if;
+    -> if t>=70 and t<=74 then select concat('A: ',t) as "results";
+    -> end if;
+    -> if t>=65 and t<=69 then select concat('B+: ',t) as "results";
+    -> end if;
+    -> if t>=60 and t<=64 then select concat('B: ',t) as "results";
+    -> end if;
+    -> if t>=55 and t<=59 then select concat('C+: ',t) as "results";
+    -> end if;
+    -> if t>=50 and t<=54 then select concat('C: ',t) as "results";
+    -> end if;
+    -> if t>=45 and t<=49 then select concat('D+: ',t) as "results";
+    -> end if;
+    -> if t>=40 and t<=44 then select concat('D: ',t) as "results";
+    -> end if;
+    -> if t>=35 and t<=39 then select concat('FAIL: ',t) as "results";
+    -> end if;
+    -> end loop stu_cursor;
+    -> end //
+Query OK, 0 results affected (0.02 sec)
+
+mysql> delimiter ;
+
+mysql> call cal_grade();
++-------+
+|results|
++-------+
+| O: 92 |
++-------+
+1 row in set (0.00 sec)
+
++--------+
+| results|
++--------+
+| A+: 77 |
++--------+
+1 row in set (0.00 sec)
+
++--------+
+| results|
++--------+
+| D+: 48 |
++--------+
+1 row in set (0.00 sec)
+
++-------+
+|results|
++-------+
+| O: 99 |
++-------+
+1 row in set (0.01 sec)
+
++-------+
+|results|
++-------+
+| O: 97 |
++-------+
+1 row in set (0.01 sec)
+
+ERROR 1329 (02000): No data - zero results fetched, selected, or processed

@@ -1,0 +1,114 @@
+Name : ANURAG PATIL
+Roll No. : SIB27
+Lab Assignment : 7
+Execute DDL/DML statements which demonstrate the use of views. Update the base
+table using its corresponding view.
+---------------------------------------------------------------------------------------------
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| anudb              |
+| demo               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+6 rows in set (0.07 sec)
+
+mysql> use anudb;
+Database changed
+mysql> show tables;
++-----------------+
+| Tables_in_anudb |
++-----------------+
+| dept            |
+| emp             |
++-----------------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE TABLE employees (
+    ->   id INT PRIMARY KEY,
+    ->   name VARCHAR(50),
+    ->   age INT,
+    ->   department VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO employees (id, name, age, department)
+    -> VALUES
+    ->   (1, 'John cina', 30, 'Sales'),
+    ->   (2, 'Virat Kohli', 25, 'Marketing'),
+    ->   (3, 'Bobby Deol', 35, 'HR'),
+    ->   (4, 'Akshay Kumar ', 28, 'Sales'),
+    ->   (5, 'Tom Holland ', 32, 'IT');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++----+-------------+------+------------+
+| id | name        | age  | department |
++----+-------------+------+------------+
+|  1 | John cina    |   30 | Sales      |
+|  2 | Virat Kohli  |   25 | Marketing  |
+|  3 | Bobby Deol |   35 | HR         |
+|  4 | Akshay Kumar    |   28 | Sales      |
+|  5 | Tom Holland   |   32 | IT         |
++----+-------------+------+------------+
+5 rows in set (0.00 sec)
+
+mysql> create view emp_view
+    -> as select id,name from employees;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from emp_view;
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | John cina    |
+|  2 | Virat Kohli  |
+|  3 | Bobby Deol |
+|  4 | Akshay Kumar    |
+|  5 | Tom Holland   |
++----+-------------+
+5 rows in set (0.00 sec)
+
+mysql> create view emp_view2
+    -> as select * from employees
+    -> where age<30;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from emp_view2;
++----+------------+------+------------+
+| id | name       | age  | department |
++----+------------+------+------------+
+|  2 | Virat Kohli |   25 | Marketing  |
+|  4 | Akshay Kumar   |   28 | Sales      |
++----+------------+------+------------+
+2 rows in set (0.00 sec)
+
+mysql> update emp_view
+    -> set name = 'Allu Arjun'
+    -> where id=5;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from emp_view;
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | John cina    |
+|  2 | Virat Kohli  |
+|  3 | Bobby Deol |
+|  4 | Akshay Kumar    |
+|  5 | Allu Arjun  |
++----+-------------+
+5 rows in set (0.00 sec)
+
+mysql> drop view emp_view2;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from emp_view2;
+ERROR 1146 (42S02): Table 'anudb.emp_view2' doesn't exist

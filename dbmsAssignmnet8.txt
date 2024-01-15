@@ -1,0 +1,144 @@
+Name : ANURAG PATIL
+Roll No. : SIB27
+Lab Assignment : 8
+
+Write and execute PL/SQL stored procedure and function to perform a 
+suitable task on the database. Demonstrate its use.
+------------------------------------------------------------------------------
+mysql> use anudb;
+Database changed
+mysql> show tables;
++------------------+
+| Tables_in_anudb  |
++------------------+
+| customer         |
+| customer_trigger |
+| dept             |
+| emp              |
+| emp1             |
+| emp_view         |
+| employees        |
++------------------+
+7 rows in set (0.01 sec)
+
+mysql> CREATE TABLE cars (
+    ->     make varchar(100),
+    ->     model varchar(100),
+    ->     year int,
+    ->     value decimal(10, 2)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO cars
+    -> VALUES
+    -> ('Porsche', '911 GT3', 2020, 169700),
+    -> ('Porsche', 'Cayman GT4', 2018, 118000),
+    -> ('Porsche', 'Panamera', 2022, 113200),
+    -> ('Porsche', 'Macan', 2019, 27400),
+    -> ('Porsche', '718 Boxster', 2017, 48880),
+    -> ('Ferrari', '488 GTB', 2015, 254750),
+    -> ('Ferrari', 'F8 Tributo', 2019, 375000),
+    -> ('Ferrari', 'SF90 Stradale', 2020, 627000),
+    -> ('Ferrari', '812 Superfast', 2017, 335300),
+    -> ('Ferrari', 'GTC4Lusso', 2016, 268000);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> select * from cars;
++---------+---------------+------+-----------+
+| make    | model         | year | value     |
++---------+---------------+------+-----------+
+| Porsche | 911 GT3       | 2020 | 169700.00 |
+| Porsche | Cayman GT4    | 2018 | 118000.00 |
+| Porsche | Panamera      | 2022 | 113200.00 |
+| Porsche | Macan         | 2019 |  27400.00 |
+| Porsche | 718 Boxster   | 2017 |  48880.00 |
+| Ferrari | 488 GTB       | 2015 | 254750.00 |
+| Ferrari | F8 Tributo    | 2019 | 375000.00 |
+| Ferrari | SF90 Stradale | 2020 | 627000.00 |
+| Ferrari | 812 Superfast | 2017 | 335300.00 |
+| Ferrari | GTC4Lusso     | 2016 | 268000.00 |
++---------+---------------+------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE get_all_cars()
+    -> BEGIN
+    ->     SELECT * FROM cars ORDER BY make, value DESC;
+    -> END //
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> DELIMITER ;
+mysql> CALL get_all_cars;
++---------+---------------+------+-----------+
+| make    | model         | year | value     |
++---------+---------------+------+-----------+
+| Ferrari | SF90 Stradale | 2020 | 627000.00 |
+| Ferrari | F8 Tributo    | 2019 | 375000.00 |
+| Ferrari | 812 Superfast | 2017 | 335300.00 |
+| Ferrari | GTC4Lusso     | 2016 | 268000.00 |
+| Ferrari | 488 GTB       | 2015 | 254750.00 |
+| Porsche | 911 GT3       | 2020 | 169700.00 |
+| Porsche | Cayman GT4    | 2018 | 118000.00 |
+| Porsche | Panamera      | 2022 | 113200.00 |
+| Porsche | 718 Boxster   | 2017 |  48880.00 |
+| Porsche | Macan         | 2019 |  27400.00 |
++---------+---------------+------+-----------+
+10 rows in set (0.01 sec)
+
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE get_cars_by_year(
+    ->     IN year_filter int
+    -> )
+    -> BEGIN
+    ->     SELECT * FROM cars WHERE year = year_filter ORDER BY make, value DESC;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL get_cars_by_year(2017);
++---------+---------------+------+-----------+
+| make    | model         | year | value     |
++---------+---------------+------+-----------+
+| Ferrari | 812 Superfast | 2017 | 335300.00 |
+| Porsche | 718 Boxster   | 2017 |  48880.00 |
++---------+---------------+------+-----------+
+2 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE get_car_stats_by_year(
+    ->     IN year_filter int,
+    ->     OUT cars_number int,
+    ->     OUT min_value decimal(10, 2),
+    ->     OUT avg_value decimal(10, 2),
+    ->     OUT max_value decimal(10, 2)
+    -> )
+    -> BEGIN
+    ->     SELECT COUNT(*), MIN(value), AVG(value), MAX(value)
+    ->     INTO cars_number, min_value, avg_value, max_value
+    ->     FROM cars
+    ->     WHERE year = year_filter ORDER BY make, value DESC;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL get_car_stats_by_year(2017, @number, @min, @avg, @max);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT @number, @min, @avg, @max;
++---------+----------+-----------+-----------+
+| @number | @min     | @avg      | @max      |
++---------+----------+-----------+-----------+
+|       2 | 48880.00 | 192090.00 | 335300.00 |
++---------+----------+-----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DROP PROCEDURE get_car_stats_by_year;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CALL get_car_stats_by_year(2017, @number, @min, @avg, @max);
+ERROR 1305 (42000): PROCEDURE anudb.get_car_stats_by_year does not exist

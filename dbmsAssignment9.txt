@@ -1,0 +1,110 @@
+Name : ANURAG PATIL
+Roll No. : SIB27
+Lab Assignment : 9
+Write and execute suitable database triggers .Consider row level and 
+statement level triggers.
+----------------------------------------------------------------------------------------------------------------
+mysql> use anudb;
+Database changed
+mysql> show tables;
++-----------------+
+| Tables_in_anudb |
++-----------------+
+| customer        |
+| dept            |
+| emp             |
+| emp1            |
+| emp_view        |
+| employees       |
++-----------------+
+6 rows in set (0.02 sec)
+
+mysql> select * from customer;
++----+--------+---------+-----+-----------+--------+
+| id | name   | address | age | post      | salary |
++----+--------+---------+-----+-----------+--------+
+|  1 | rohan  | chennai |  25 | employee  |  30000 |
+|  2 | aryan  | kolkata |  26 | hr        |  50000 |
+|  3 | raj    | mumbai  |  28 | president |  60000 |
+|  4 | suresh | patna   |  29 | manager   |  90000 |
++----+--------+---------+-----+-----------+--------+
+4 rows in set (0.00 sec)
+
+mysql> create table customer_trigger(
+    -> user_id varchar(20),
+    -> details varchar(30));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> desc cutomer_trigger;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| user_id | varchar(20) | YES  |     | NULL    |       |
+| details | varchar(30) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> delimiter //
+mysql> create trigger insert_trigger
+    -> before insert on customer
+    -> for each row
+    -> begin
+    -> insert into customer_trigger
+    -> values(user(),'customer inserted');
+    -> end //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+
+mysql> insert into customer values(5,'kriti','mumbai',30,'webdevop',55000);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from customer;
++----+--------+---------+-----+-----------+--------+
+| id | name   | address | age | post      | salary |
++----+--------+---------+-----+-----------+--------+
+|  1 | rohan  | chennai |  25 | employee  |  30000 |
+|  2 | aryan  | kolkata |  26 | hr        |  50000 |
+|  3 | raj    | mumbai  |  28 | president |  60000 |
+|  4 | suresh | patna   |  29 | manager   |  90000 |
+|  5 | kriti  | mumbai  |  30 | webdevop  |  55000 |
++----+--------+---------+-----+-----------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from customer_trigger;
++----------------+-------------------+
+| user_id        | details           |
++----------------+-------------------+
+| root@localhost | customer inserted |
++----------------+-------------------+
+1 row in set (0.00 sec)
+
+mysql> delimiter //
+mysql> create trigger update_trigger
+    -> before update on customer
+    -> for each row
+    -> begin
+    -> if new.salary<50000 then
+    -> set new.salary=40000;
+    -> else
+    -> set new.salary=new.salary+500;
+    -> end if;
+    -> end //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> update customer set salary=40000 where id=1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from customer;
++----+--------+---------+-----+-----------+--------+
+| id | name   | address | age | post      | salary |
++----+--------+---------+-----+-----------+--------+
+|  1 | rohan  | chennai |  25 | employee  |  40000 |
+|  2 | aryan  | kolkata |  26 | hr        |  50000 |
+|  3 | raj    | mumbai  |  28 | president |  60000 |
+|  4 | suresh | patna   |  29 | manager   |  90000 |
+|  5 | kriti  | mumbai  |  30 | webdevop  |  55000 |
++----+--------+---------+-----+-----------+--------+
+5 rows in set (0.00 sec)
